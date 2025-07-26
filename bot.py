@@ -37,12 +37,19 @@ def is_paid_user(user_id):
     paid_users = load_json(PAID_USERS_FILE)
     return str(user_id) in paid_users
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 def add_paid_user(user_id):
     paid_users = load_json(PAID_USERS_FILE)
-    paid_users[str(user_id)] = datetime.now().strftime("%Y-%m-%d")  # ✅ lưu ngày hợp lệ
+    
+    # Lấy thời gian hiện tại theo múi giờ Hàn Quốc (UTC+9)
+    korea_time = datetime.now(timezone(timedelta(hours=9)))
+    
+    # Ghi lại ngày theo định dạng YYYY-MM-DD
+    paid_users[str(user_id)] = korea_time.strftime("%Y-%m-%d")
+    
     save_json(PAID_USERS_FILE, paid_users)
+
 
 # ------------------- Rate fetching functions -------------------
 def get_binance_p2p_usdt_prices():

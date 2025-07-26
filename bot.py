@@ -37,10 +37,13 @@ def is_paid_user(user_id):
     paid_users = load_json(PAID_USERS_FILE)
     return str(user_id) in paid_users
 
+from datetime import datetime
+
 def add_paid_user(user_id):
     paid_users = load_json(PAID_USERS_FILE)
-    paid_users[str(user_id)] = True
+    paid_users[str(user_id)] = datetime.now().strftime("%Y-%m-%d")  # ✅ lưu ngày hợp lệ
     save_json(PAID_USERS_FILE, paid_users)
+
 # ------------------- Rate fetching functions -------------------
 def get_binance_p2p_usdt_prices():
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"

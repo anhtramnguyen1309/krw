@@ -159,6 +159,7 @@ def get_reply_markup(user_id):
         keyboard = [
             ["/check_giacoin","/log_user"],
             ["/thanhtoan", "/mokhoa"],
+            ["/xoa_user"]
         ]
     else:
         keyboard = [
@@ -217,6 +218,31 @@ async def mokhoa(update: Update, context: ContextTypes.DEFAULT_TYPE):
     add_paid_user(target_id)
     await update.message.reply_text(f"✅ Đã mở khóa cho user_id: {target_id}")
 LOGGED_USERS_FILE = 'logged_users.json'
+
+async def xoa_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text("❌ Bạn không có quyền sử dụng lệnh này.")
+        return
+
+    if len(context.args) != 1:
+        await update.message.reply_text("📌 Dùng đúng cú pháp: /xoa_user <user_id>")
+        return
+
+    target_id = context.args[0]
+    # Xóa khỏi paid_users
+    paid_users = load_json(PAID_USERS_FILE)
+    if target_id in paid_users:
+        del paid_users[target_id]
+        save_json(PAID_USERS_FILE, paid_users)
+
+    # Xóa khỏi user_usage
+    usage = load_json(USAGE_FILE)
+    if target_id in usage:
+        del usage[target_id]
+        save_json(USAGE_FILE, usage)
+
+    await update.message.reply_text(f"✅ Đã xóa user_id {target_id} khỏi hệ thống.")
+
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -297,6 +323,7 @@ def main():
     app.add_handler(CommandHandler("mokhoa", mokhoa))
     app.add_handler(CommandHandler("log_user", log_user))
     app.add_handler(CommandHandler("hsd", hsd))
+    app.add_handler(CommandHandler("xoa_user", xoa_user))
 
     print("✅ Bot đang chạy...")
     app.run_polling()

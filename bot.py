@@ -33,9 +33,19 @@ def increment_usage(user_id):
     save_json(USAGE_FILE, usage)
     return usage[user_id]
 
+from datetime import datetime, timedelta
+
 def is_paid_user(user_id):
     paid_users = load_json(PAID_USERS_FILE)
-    return str(user_id) in paid_users
+    user_id = str(user_id)
+    if user_id not in paid_users:
+        return False
+    
+    try:
+        paid_date = datetime.strptime(paid_users[user_id], "%Y-%m-%d")
+        return datetime.now() <= paid_date + timedelta(days=2)
+    except:
+        return False
 
 from datetime import datetime, timezone, timedelta
 
@@ -116,19 +126,6 @@ async def fetch_giacoin_text():
     return result
 
 # ------------------- Telegram Command Handler -------------------
-from datetime import datetime, timedelta
-
-def is_paid_user(user_id):
-    paid_users = load_json(PAID_USERS_FILE)
-    user_id = str(user_id)
-    if user_id not in paid_users:
-        return False
-    
-    try:
-        paid_date = datetime.strptime(paid_users[user_id], "%Y-%m-%d")
-        return datetime.now() <= paid_date + timedelta(days=2)
-    except:
-        return False
 
 
 async def check_giacoin(update: Update, context: ContextTypes.DEFAULT_TYPE):

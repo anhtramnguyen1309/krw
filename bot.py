@@ -131,27 +131,36 @@ async def fetch_giacoin_text():
 async def check_giacoin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
-    # ✅ Nếu là user đã thanh toán thì cho dùng thoải mái
+    usage_count = increment_usage(user_id)  # ✅ luôn tăng lượt dùng, kể cả user trả phí
+
     if is_paid_user(user_id):
+        # Người dùng đã thanh toán còn hạn -> tiếp tục
         pass
     else:
-        usage_count = increment_usage(user_id)
-        if not is_paid_user(user_id) and usage_count > MAX_FREE_USAGE:
-
+        if str(user_id) in load_json(PAID_USERS_FILE):
+            # Người từng thanh toán nhưng đã hết hạn
+            await update.message.reply_text(
+                "❌ Gói sử dụng của bạn đã hết hạn sau 30 ngày.\n"
+                "👉 Vui lòng thanh toán lại để tiếp tục sử dụng."
+            )
+            return
+        elif usage_count > MAX_FREE_USAGE:
+            # Người chưa từng thanh toán, vượt quá 10 lượt
             await update.message.reply_text(
                 "❗Bạn đã dùng thử *10 lần miễn phí*.\n"
-                "👉 Vui lòng chuyển khoản để tiếp tục sử dụng:\n"
+                "👉 Vui lòng thanh toán để tiếp tục sử dụng:\n"
                 "👉 199.000đ / 1 Tháng"
             )
             return
 
-    # ✅ Nếu vượt qua các kiểm tra trên thì xử lý bình thường
+    # ✅ Nếu vượt qua các điều kiện trên thì xử lý bình thường
     msg = await update.message.reply_text("⏳ Đang lấy tỷ giá, vui lòng chờ...")
     try:
         text = await fetch_giacoin_text()
         await msg.edit_text(text)
     except Exception as e:
         await msg.edit_text("❌ Lỗi khi lấy tỷ giá: " + str(e))
+
 
 
 from telegram import ReplyKeyboardMarkup, Update

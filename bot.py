@@ -95,7 +95,7 @@ def get_bithumb_price(symbol):
 
 async def fetch_giacoin_text():
     usdt_buy, usdt_sell = get_binance_p2p_usdt_prices()
-    coins = ["USDT", "XRP", "TRX", "DOGE", "BTC", "ETH"]
+    coins = ["USDT", "XRP", "TRX", "BTC", "ETH"]
     result = "#TỶ GIÁ COIN\n\n"
 
     for coin in coins:
@@ -214,7 +214,7 @@ def is_paid_user(user_id):
         return False
     try:
         paid_date = datetime.strptime(date_str, "%Y-%m-%d")
-        return datetime.now() - paid_date < timedelta(days=2)
+        return datetime.now() - paid_date < timedelta(days=30)
     except:
         return False
 
@@ -314,7 +314,7 @@ async def hsd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         paid_date = datetime.strptime(paid_users[user_id], "%Y-%m-%d")
-        remaining = (paid_date + timedelta(days=2)) - datetime.now()
+        remaining = (paid_date + timedelta(days=30)) - datetime.now()
         days_left = remaining.days
 
         if days_left < 0:

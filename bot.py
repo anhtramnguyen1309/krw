@@ -202,7 +202,7 @@ async def thanhtoan(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "💳 *Ngân hàng:* Vietcombank\n"
         "👤 *Chủ tài khoản:* NGUYEN THI THAM\n"
         "🔢 *Số tài khoản:* 2387180867\n\n"
-        "Sau khi chuyển khoản, bạn hãy gửi tin nhắn đến *@Tram_Nguyen1309* để được kích hoạt."
+        "Sau khi chuyển khoản, bạn hãy gửi tin nhắn đến *@JoyceNguyenzz* để được kích hoạt."
     )
     await update.message.reply_text(text, parse_mode="Markdown")
 from datetime import datetime, timedelta
